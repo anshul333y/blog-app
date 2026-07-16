@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import auth from "./auth";
-import blog from "./blog";
+import auth from "./routes/auth";
+import blog from "./routes/blog";
 
 const app = new Hono().basePath("/api/v1");
 

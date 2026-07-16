@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import getPrisma from "./prismaFunction";
+import getPrisma from "../prismaFunction";
 import { sign } from "hono/jwt";
 
 const auth = new Hono<{
