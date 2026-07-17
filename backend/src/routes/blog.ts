@@ -51,29 +51,25 @@ blog.put("/", async (c) => {
   });
 });
 
-blog.get("/:id", async (c) => {
-  const body = await c.req.json();
-  const prisma = getPrisma(c.env.DATABASE_URL);
-
-  const post = await prisma.post.findFirst({
-    where: {
-      id: body.id,
-    },
-  });
-
-  return c.json({
-    post,
-  });
-});
-
 // TODO: add pagination
 blog.get("/bulk", async (c) => {
   const prisma = getPrisma(c.env.DATABASE_URL);
   const posts = await prisma.post.findMany();
 
-  return c.json({
-    posts,
+  return c.json(posts);
+});
+
+blog.get("/:id", async (c) => {
+  const id = c.req.param("id");
+  const prisma = getPrisma(c.env.DATABASE_URL);
+
+  const post = await prisma.post.findFirst({
+    where: {
+      id: id,
+    },
   });
+
+  return c.json(post);
 });
 
 export default blog;
