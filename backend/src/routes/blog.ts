@@ -15,61 +15,77 @@ const blog = new Hono<{
 blog.use("/*", loggedin);
 
 blog.post("/", async (c) => {
-  const body = await c.req.json();
-  const authorId = c.get("userId");
-  const prisma = getPrisma(c.env.DATABASE_URL);
+  try {
+    const body = await c.req.json();
+    const authorId = c.get("userId");
+    const prisma = getPrisma(c.env.DATABASE_URL);
 
-  const post = await prisma.post.create({
-    data: {
-      title: body.title,
-      content: body.content,
-      authorId: authorId,
-    },
-  });
+    const post = await prisma.post.create({
+      data: {
+        title: body.title,
+        content: body.content,
+        authorId: authorId,
+      },
+    });
 
-  return c.json({
-    id: post.id,
-  });
+    return c.json({
+      id: post.id,
+    });
+  } catch (error) {
+    return c.text("Internal Server Error", 500);
+  }
 });
 
 blog.put("/", async (c) => {
-  const body = await c.req.json();
-  const prisma = getPrisma(c.env.DATABASE_URL);
+  try {
+    const body = await c.req.json();
+    const prisma = getPrisma(c.env.DATABASE_URL);
 
-  const post = await prisma.post.update({
-    where: {
-      id: body.id,
-    },
-    data: {
-      title: body.title,
-      content: body.content,
-    },
-  });
+    const post = await prisma.post.update({
+      where: {
+        id: body.id,
+      },
+      data: {
+        title: body.title,
+        content: body.content,
+      },
+    });
 
-  return c.json({
-    id: post.id,
-  });
+    return c.json({
+      id: post.id,
+    });
+  } catch (error) {
+    return c.text("Internal Server Error", 500);
+  }
 });
 
 // TODO: add pagination
 blog.get("/bulk", async (c) => {
-  const prisma = getPrisma(c.env.DATABASE_URL);
-  const posts = await prisma.post.findMany();
+  try {
+    const prisma = getPrisma(c.env.DATABASE_URL);
+    const posts = await prisma.post.findMany();
 
-  return c.json(posts);
+    return c.json(posts);
+  } catch (error) {
+    return c.text("Internal Server Error", 500);
+  }
 });
 
 blog.get("/:id", async (c) => {
-  const id = c.req.param("id");
-  const prisma = getPrisma(c.env.DATABASE_URL);
+  try {
+    const id = c.req.param("id");
+    const prisma = getPrisma(c.env.DATABASE_URL);
 
-  const post = await prisma.post.findFirst({
-    where: {
-      id: id,
-    },
-  });
+    const post = await prisma.post.findUnique({
+      where: {
+        id: id,
+      },
+    });
 
-  return c.json(post);
+    return c.json(post);
+  } catch (error) {
+    return c.text("Internal Server Error", 500);
+  }
 });
 
 export default blog;
