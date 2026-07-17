@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import loggedin from "../middleware/loggedin";
-import getPrisma from "../prismaFunction";
+import getPrisma from "../lib/prismaFunction";
 
 const blog = new Hono<{
   Bindings: {
