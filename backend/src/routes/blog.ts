@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import loggedin from "../middleware/loggedin";
 import getPrisma from "../lib/prismaFunction";
+import { blogPostInput, blogPutInput } from "../lib/zod";
 
 const blog = new Hono<{
   Bindings: {
@@ -19,6 +20,9 @@ blog.post("/", async (c) => {
     const body = await c.req.json();
     const authorId = c.get("userId");
     const prisma = getPrisma(c.env.DATABASE_URL);
+
+    const response = blogPostInput.safeParse(body);
+    if (!response.success) return c.text("Invalid Input", 400);
 
     const post = await prisma.post.create({
       data: {
@@ -40,6 +44,9 @@ blog.put("/", async (c) => {
   try {
     const body = await c.req.json();
     const prisma = getPrisma(c.env.DATABASE_URL);
+
+    const response = blogPutInput.safeParse(body);
+    if (!response.success) return c.text("Invalid Input", 400);
 
     const post = await prisma.post.update({
       where: {

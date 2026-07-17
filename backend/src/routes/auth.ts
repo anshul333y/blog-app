@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import getPrisma from "../lib/prismaFunction";
 import { sign } from "hono/jwt";
+import { signInInput, signUpInput } from "../lib/zod";
 
 const auth = new Hono<{
   Bindings: {
@@ -12,6 +13,9 @@ const auth = new Hono<{
 auth.post("/signup", async (c) => {
   const prisma = getPrisma(c.env.DATABASE_URL);
   const body = await c.req.json();
+
+  const response = signUpInput.safeParse(body);
+  if (!response.success) return c.text("Invalid Input", 400);
 
   // TODO: add encryption
   try {
@@ -36,6 +40,9 @@ auth.post("/signup", async (c) => {
 auth.post("/signin", async (c) => {
   const prisma = getPrisma(c.env.DATABASE_URL);
   const body = await c.req.json();
+
+  const response = signInInput.safeParse(body);
+  if (!response.success) return c.text("Invalid Input", 400);
 
   try {
     const user = await prisma.user.findUnique({
