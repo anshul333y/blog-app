@@ -1,36 +1,79 @@
 import { Hono } from "hono";
-import { verify } from "hono/jwt";
+import loggedin from "../middleware/loggedin";
+import getPrisma from "../prismaFunction";
 
 const blog = new Hono<{
   Bindings: {
     DATABASE_URL: string;
     JWT_SECRET: string;
   };
+  Variables: {
+    userId: string;
+  };
 }>();
 
-blog.use("/*", async (c, next) => {
-  const header = c.req.header("Authorization");
-  const token = header.split(" ")[1];
+blog.use("/*", loggedin);
 
-  const response = await verify(token, c.env.JWT_SECRET, "RS256");
+blog.post("/", async (c) => {
+  const body = await c.req.json();
+  const authorId = c.get("userId");
+  const prisma = getPrisma(c.env.DATABASE_URL);
 
-  if (response.id) {
-    await next();
-  }
-  return c.text("something went wrong");
+  const post = await prisma.post.create({
+    data: {
+      title: body.title,
+      content: body.content,
+      authorId: authorId,
+    },
+  });
+
+  return c.json({
+    id: post.id,
+  });
 });
 
-blog.post("/", (c) => {
-  return c.text("Hello Hono!");
+blog.put("/", async (c) => {
+  const body = await c.req.json();
+  const prisma = getPrisma(c.env.DATABASE_URL);
+
+  const post = await prisma.post.update({
+    where: {
+      id: body.id,
+    },
+    data: {
+      title: body.title,
+      content: body.content,
+    },
+  });
+
+  return c.json({
+    id: post.id,
+  });
 });
 
-blog.put("/", (c) => {
-  return c.text("Hello Hono!");
+blog.get("/:id", async (c) => {
+  const body = await c.req.json();
+  const prisma = getPrisma(c.env.DATABASE_URL);
+
+  const post = await prisma.post.findFirst({
+    where: {
+      id: body.id,
+    },
+  });
+
+  return c.json({
+    post,
+  });
 });
 
-blog.get("/:id", (c) => {
-  const id = c.req.param("id");
-  return c.text("Hello Hono! the id is : " + id);
+// TODO: add pagination
+blog.get("/bulk", async (c) => {
+  const prisma = getPrisma(c.env.DATABASE_URL);
+  const posts = await prisma.post.findMany();
+
+  return c.json({
+    posts,
+  });
 });
 
 export default blog;

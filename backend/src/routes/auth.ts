@@ -13,6 +13,7 @@ auth.post("/signup", async (c) => {
   const prisma = getPrisma(c.env.DATABASE_URL);
   const body = await c.req.json();
 
+  // TODO: add encryption
   try {
     const user = await prisma.user.create({
       data: {
@@ -22,13 +23,13 @@ auth.post("/signup", async (c) => {
     });
 
     const secret = c.env.JWT_SECRET;
-    const token = await sign({ id: user.id }, secret);
+    const token = await sign({ id: user.id }, secret, "HS256");
 
     return c.json({
       jwt: token,
     });
   } catch (error) {
-    return c.text("something went wrong");
+    return c.text("Internal Server Error", 500);
   }
 });
 
@@ -43,18 +44,18 @@ auth.post("/signin", async (c) => {
       },
     });
 
-    if (user) {
-      const secret = c.env.JWT_SECRET;
-      const token = await sign({ id: user.id }, secret);
-
-      return c.json({
-        jwt: token,
-      });
+    if (!user || user.password !== body.password) {
+      return c.text("Unauthorized", 401);
     }
 
-    return c.text("something went wrong");
+    const secret = c.env.JWT_SECRET;
+    const token = await sign({ id: user.id }, secret, "HS256");
+
+    return c.json({
+      jwt: token,
+    });
   } catch (error) {
-    return c.text("something went wrong");
+    return c.text("Internal Server Error", 500);
   }
 });
 
