@@ -4,7 +4,7 @@ import type { signInInput } from "./zod";
 import type { blogPostInput } from "./zod";
 import type { blogPutInput } from "./zod";
 
-export type SignUpType = z.infer<typeof signUpInput>;
-export type SignInType = z.infer<typeof signInInput>;
-export type BlogPostInput = z.infer<typeof blogPostInput>;
-export type BlogPutInput = z.infer<typeof blogPutInput>;
+export type signUpType = z.infer<typeof signUpInput>;
+export type signInType = z.infer<typeof signInInput>;
+export type blogPostInput = z.infer<typeof blogPostInput>;
+export type blogPutInput = z.infer<typeof blogPutInput>;
