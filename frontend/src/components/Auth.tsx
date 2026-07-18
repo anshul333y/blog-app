@@ -1,13 +1,33 @@
 import { useState, type ChangeEvent } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import type { signUpType } from "../lib/type";
+import axios from "axios";
 
 function Auth({ type }: { type: "signup" | "signin" }) {
+  const navigate = useNavigate();
+
   const [postInput, setPostInput] = useState<signUpType>({
     email: "",
     password: "",
     name: "",
   });
+
+  async function sendRequest() {
+    try {
+      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+      console.log(BACKEND_URL);
+      const response = await axios.post(
+        `${BACKEND_URL}/api/v1/auth/${type == "signup" ? "signup" : "signin"}`,
+        postInput,
+      );
+      const token = response.data;
+      localStorage.setItem("token", token.jwt);
+      navigate("/blogs");
+    } catch (error) {
+      console.log(error);
+      alert("Internal Server Error");
+    }
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white px-4">
@@ -30,7 +50,7 @@ function Auth({ type }: { type: "signup" | "signin" }) {
           </p>
         </div>
 
-        <form className="space-y-6">
+        <div className="space-y-6">
           <div className={`${type === "signup" ? "block" : "hidden"}`}>
             <LabelInput
               label="username"
@@ -72,12 +92,13 @@ function Auth({ type }: { type: "signup" | "signin" }) {
           </div>
 
           <button
+            onClick={sendRequest}
             type="submit"
             className="h-12 w-full rounded-md bg-neutral-900 text-lg font-semibold text-white transition hover:bg-black"
           >
             {type == "signup" ? "Sign Up" : "Sign In"}
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );

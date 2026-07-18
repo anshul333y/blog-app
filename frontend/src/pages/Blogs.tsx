@@ -1,4 +1,4 @@
-function Blog() {
+function Blogs() {
   return (
     <>
       <div>blog</div>
@@ -6,4 +6,4 @@ function Blog() {
   );
 }
 
-export default Blog;
+export default Blogs;
