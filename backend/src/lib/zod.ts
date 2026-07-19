@@ -14,7 +14,6 @@ export const signInInput = z.object({
 export const blogPostInput = z.object({
   title: z.string(),
   content: z.string(),
-  authorId: z.string(),
 });
 
 export const blogPutInput = z.object({
