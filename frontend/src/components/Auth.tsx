@@ -2,6 +2,7 @@ import { useState, type ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import type { signUpType } from "../lib/type";
 import axios from "axios";
+import BACKEND_URL from "../config";
 
 function Auth({ type }: { type: "signup" | "signin" }) {
   const navigate = useNavigate();
@@ -14,8 +15,6 @@ function Auth({ type }: { type: "signup" | "signin" }) {
 
   async function sendRequest() {
     try {
-      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-      console.log(BACKEND_URL);
       const response = await axios.post(
         `${BACKEND_URL}/auth/${type == "signup" ? "signup" : "signin"}`,
         postInput,
