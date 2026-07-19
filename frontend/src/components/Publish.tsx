@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useState, type ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
 import Appbar from "./Appbar";
 import BACKEND_URL from "../config";
+import { useNavigate } from "react-router";
 
 export default function Publish() {
   const [title, setTitle] = useState("");
