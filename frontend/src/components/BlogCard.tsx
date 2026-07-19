@@ -1,15 +1,17 @@
+import { Link } from "react-router";
 import Avatar from "./Avatar";
 
 interface blogCardProps {
+  id: string;
   authorName: string;
   title: string;
   content: string;
   publishedDate: string;
 }
 
-function BlogCard(props: blogCardProps) {
+export default function BlogCard(props: blogCardProps) {
   return (
-    <>
+    <Link to={`/blog/${props.id}`}>
       <div className="p-4 border-b border-slate-200 pb-4 w-screen max-w-3xl cursor-pointer">
         <div>
           <Avatar name={props.authorName} /> {props.authorName} .{" "}
@@ -23,8 +25,6 @@ function BlogCard(props: blogCardProps) {
           {`${Math.ceil(props.content.length / 100)} minute(s) read`}
         </div>
       </div>
-    </>
+    </Link>
   );
 }
-
-export default BlogCard;

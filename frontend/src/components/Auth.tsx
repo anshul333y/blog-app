@@ -17,7 +17,7 @@ function Auth({ type }: { type: "signup" | "signin" }) {
       const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
       console.log(BACKEND_URL);
       const response = await axios.post(
-        `${BACKEND_URL}/api/v1/auth/${type == "signup" ? "signup" : "signin"}`,
+        `${BACKEND_URL}/auth/${type == "signup" ? "signup" : "signin"}`,
         postInput,
       );
       const token = response.data;
@@ -122,7 +122,7 @@ function LabelInput({ label, placeholder, type, onChange }: LabelInputType) {
         onChange={onChange}
         type={type}
         placeholder={placeholder}
-        className="h-12 w-full rounded-md border border-gray-300 px-4 text-base outline-none transition focus:border-black"
+        className="h-12 w-full rounded-md border border-gray-300 px-4 text-base outline-none transition hover:border-black"
       />
     </>
   );
