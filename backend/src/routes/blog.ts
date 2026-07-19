@@ -70,7 +70,18 @@ blog.put("/", async (c) => {
 blog.get("/bulk", async (c) => {
   try {
     const prisma = getPrisma(c.env.DATABASE_URL);
-    const posts = await prisma.post.findMany();
+    const posts = await prisma.post.findMany({
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        author: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
 
     return c.json(posts);
   } catch (error) {
